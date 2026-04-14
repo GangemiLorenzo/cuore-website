@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Cuore</title>
+  <meta name="description" content="Cuore's privacy policy. Your health data stays on your device." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:             #060708;
+      --bg-card:        #0e0f10;
+      --text-primary:   #f5f5f7;
+      --text-secondary: #98989e;
+      --text-muted:     #56565a;
+      --accent:         #FF4040;
+      --accent-soft:    #FF6363;
+      --border:         rgba(255,255,255,0.07);
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent-soft); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(6,7,8,0.88);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 58px;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .nav-logo-heart {
+      width: 28px; height: 28px;
+      background: radial-gradient(circle at 38% 35%, #e84040, #be2222 60%, #961818);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 12px rgba(255,64,64,0.4);
+    }
+    .nav-logo-heart svg { width: 15px; height: 15px; fill: #fff; }
+
+    .nav-back {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-back:hover { color: var(--text-secondary); text-decoration: none; }
+    .nav-back svg { width: 14px; height: 14px; }
+
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 72px 24px 100px;
+    }
+
+    .page-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      color: var(--accent-soft);
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      line-height: 1.05;
+      margin-bottom: 12px;
+    }
+
+    .meta {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 56px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: var(--text-primary);
+      margin: 40px 0 12px;
+    }
+
+    h2:first-of-type { margin-top: 0; }
+
+    p { color: var(--text-secondary); margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+
+    ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding-left: 0;
+    }
+
+    li {
+      color: var(--text-secondary);
+      padding-left: 20px;
+      position: relative;
+    }
+    li::before {
+      content: '–';
+      position: absolute;
+      left: 0;
+      color: var(--accent-soft);
+    }
+
+    .highlight-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 32px 0;
+    }
+    .highlight-box p {
+      color: var(--text-primary);
+      font-weight: 500;
+      margin: 0;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 24px;
+    }
+    .footer-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-links { display: flex; gap: 20px; list-style: none; }
+    .footer-links a { font-size: 13px; color: var(--text-muted); }
+    .footer-links a:hover { color: var(--text-secondary); text-decoration: none; }
+    .footer-copy { font-size: 12px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">
+      <div class="nav-logo-heart">
+        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      </div>
+      Cuore
+    </a>
+    <a class="nav-back" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to home
+    </a>
+  </div>
+</nav>
+
+<main class="page">
+  <div class="page-label">Legal</div>
+  <h1>Privacy Policy</h1>
+  <p class="meta">Last updated: April 14, 2026</p>
+
+  <div class="highlight-box">
+    <p>The short version: Cuore collects no personal data, has no backend servers, and never transmits your health information anywhere. Everything stays on your device.</p>
+  </div>
+
+  <h2>1. Who we are</h2>
+  <p>Cuore is an iOS application that measures heart rate, heart rate variability (HRV), and stress levels using the iPhone rear camera and flash. References to "Cuore", "we", "us", or "our" in this policy refer to the developer of the Cuore app.</p>
+
+  <h2>2. Data we collect</h2>
+  <p>Cuore does <strong>not</strong> collect, transmit, or store any personal data on external servers. Specifically:</p>
+  <ul>
+    <li>We do not collect your name, email address, or any contact information.</li>
+    <li>We do not create user accounts or profiles.</li>
+    <li>We do not collect biometric data, health measurements, or sensor readings outside of your device.</li>
+    <li>We do not use analytics SDKs, crash reporting services, or advertising networks.</li>
+    <li>We do not use cookies or any web tracking technologies.</li>
+  </ul>
+
+  <h2>3. Data stored on your device</h2>
+  <p>All measurement data (heart rate, HRV, stress level, timestamps) is stored locally on your iPhone using Apple's SwiftData framework. This data:</p>
+  <ul>
+    <li>Never leaves your device unless you explicitly choose to share it.</li>
+    <li>Is not accessible to us or any third party.</li>
+    <li>Can be deleted at any time by deleting the Cuore app.</li>
+    <li>May be included in iCloud backups if you have iCloud Backup enabled for your device — this is controlled entirely by your iOS settings.</li>
+  </ul>
+
+  <h2>4. Apple Health integration</h2>
+  <p>With your permission, Cuore can write heart rate (BPM) and HRV (RMSSD) readings to Apple Health after each measurement. Important details:</p>
+  <ul>
+    <li>Cuore only <strong>writes</strong> to Apple Health — it never reads any existing health data you have stored there.</li>
+    <li>Health data written to Apple Health is governed by Apple's own privacy policy and iOS permissions system.</li>
+    <li>You can revoke this permission at any time in iOS Settings → Privacy & Security → Health → Cuore.</li>
+  </ul>
+
+  <h2>5. Camera and flash access</h2>
+  <p>Cuore requests access to your device's rear camera and flash solely for the purpose of photoplethysmography (PPG) measurement. We do not capture, save, or transmit any images or video. The camera feed is processed entirely in memory and discarded after each measurement session.</p>
+
+  <h2>6. In-app purchases and subscriptions</h2>
+  <p>Cuore Pro is offered as an auto-renewable subscription through Apple's App Store. All payment processing is handled exclusively by Apple. We do not receive or store your payment information. For billing questions, please refer to Apple's App Store support.</p>
+
+  <h2>7. Children's privacy</h2>
+  <p>Cuore is not directed at children under the age of 13. We do not knowingly collect any information from children. Because we collect no personal data from any users, no special handling is required.</p>
+
+  <h2>8. Third-party services</h2>
+  <p>Cuore does not integrate any third-party SDKs, analytics platforms, advertising networks, or social media plugins. The app has no network communication whatsoever.</p>
+
+  <h2>9. Data security</h2>
+  <p>Because all data remains on your device and is never transmitted to external servers, the security of your measurement history is tied to the security of your iPhone. We recommend keeping your device protected with a passcode and keeping iOS up to date.</p>
+
+  <h2>10. Your rights</h2>
+  <p>Since we do not collect or hold any personal data, there is nothing for us to provide, correct, or delete on your behalf. All data associated with Cuore can be removed entirely by deleting the app from your iPhone.</p>
+
+  <h2>11. Changes to this policy</h2>
+  <p>We may update this privacy policy from time to time. Material changes will be communicated through an app update. The date at the top of this page reflects the most recent revision. Continued use of Cuore after changes are posted constitutes acceptance of the updated policy.</p>
+
+  <h2>12. Contact</h2>
+  <p>If you have questions about this privacy policy, please reach out via the support link on the App Store page for Cuore.</p>
+
+  <p style="margin-top:40px;font-size:13px;color:var(--text-muted);">Cuore is not a medical device. Measurements are intended for general wellness purposes only and should not be used to diagnose, treat, or monitor any medical condition.</p>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="terms.html">Terms &amp; Conditions</a></li>
+    </ul>
+    <p class="footer-copy">© 2026 Cuore</p>
+  </div>
+</footer>
+
+</body>
+</html>

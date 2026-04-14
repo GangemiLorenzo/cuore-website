@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms &amp; Conditions — Cuore</title>
+  <meta name="description" content="Cuore's terms and conditions of use." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:             #060708;
+      --bg-card:        #0e0f10;
+      --text-primary:   #f5f5f7;
+      --text-secondary: #98989e;
+      --text-muted:     #56565a;
+      --accent:         #FF4040;
+      --accent-soft:    #FF6363;
+      --border:         rgba(255,255,255,0.07);
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent-soft); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(6,7,8,0.88);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 58px;
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .nav-logo-heart {
+      width: 28px; height: 28px;
+      background: radial-gradient(circle at 38% 35%, #e84040, #be2222 60%, #961818);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 12px rgba(255,64,64,0.4);
+    }
+    .nav-logo-heart svg { width: 15px; height: 15px; fill: #fff; }
+
+    .nav-back {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-back:hover { color: var(--text-secondary); text-decoration: none; }
+    .nav-back svg { width: 14px; height: 14px; }
+
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 72px 24px 100px;
+    }
+
+    .page-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      color: var(--accent-soft);
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      line-height: 1.05;
+      margin-bottom: 12px;
+    }
+
+    .meta {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 56px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: var(--text-primary);
+      margin: 40px 0 12px;
+    }
+
+    p { color: var(--text-secondary); margin-bottom: 16px; }
+    p:last-child { margin-bottom: 0; }
+
+    ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    li {
+      color: var(--text-secondary);
+      padding-left: 20px;
+      position: relative;
+    }
+    li::before {
+      content: '–';
+      position: absolute;
+      left: 0;
+      color: var(--accent-soft);
+    }
+
+    .highlight-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin: 32px 0;
+    }
+    .highlight-box p {
+      color: var(--text-primary);
+      font-weight: 500;
+      margin: 0;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 24px;
+    }
+    .footer-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-links { display: flex; gap: 20px; list-style: none; }
+    .footer-links a { font-size: 13px; color: var(--text-muted); }
+    .footer-links a:hover { color: var(--text-secondary); text-decoration: none; }
+    .footer-copy { font-size: 12px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">
+      <div class="nav-logo-heart">
+        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      </div>
+      Cuore
+    </a>
+    <a class="nav-back" href="index.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to home
+    </a>
+  </div>
+</nav>
+
+<main class="page">
+  <div class="page-label">Legal</div>
+  <h1>Terms &amp; Conditions</h1>
+  <p class="meta">Last updated: April 14, 2026</p>
+
+  <div class="highlight-box">
+    <p>By downloading or using Cuore, you agree to these terms. Please read them — they're written to be clear, not to bury important details in legalese.</p>
+  </div>
+
+  <h2>1. Acceptance of terms</h2>
+  <p>By downloading, installing, or using the Cuore application ("App"), you agree to be bound by these Terms &amp; Conditions. If you do not agree, do not use the App. These terms apply to all users of the App, including users of the free tier and Cuore Pro subscribers.</p>
+
+  <h2>2. Not a medical device</h2>
+  <p>Cuore is a wellness application intended for general informational purposes only. It is <strong>not a medical device</strong> and is not intended to diagnose, treat, cure, or monitor any medical condition or disease. Measurements provided by Cuore should not be used as a substitute for professional medical advice, diagnosis, or treatment.</p>
+  <ul>
+    <li>Always seek the advice of a qualified health provider with questions about a medical condition.</li>
+    <li>Never disregard professional medical advice or delay seeking it because of something you read or measured in Cuore.</li>
+    <li>If you are experiencing a medical emergency, call your local emergency services immediately.</li>
+  </ul>
+
+  <h2>3. Measurement accuracy</h2>
+  <p>Cuore uses photoplethysmography (PPG) via your iPhone's rear camera and flash to estimate heart rate and HRV. While this technology is used in consumer-grade fitness devices, it is subject to limitations including:</p>
+  <ul>
+    <li>Measurement errors due to motion, poor finger placement, or low ambient temperature.</li>
+    <li>Variability between individual users based on skin tone, circulation, and other physiological factors.</li>
+    <li>Reduced accuracy compared to medical-grade ECG or clinical pulse oximetry equipment.</li>
+  </ul>
+  <p>Results are estimates only. We make no warranties regarding the accuracy, completeness, or reliability of any measurement.</p>
+
+  <h2>4. Eligibility</h2>
+  <p>You must be at least 13 years old to use Cuore. By using the App, you represent that you meet this age requirement. Users under 18 should use the App with the knowledge and consent of a parent or guardian.</p>
+
+  <h2>5. License</h2>
+  <p>We grant you a limited, non-exclusive, non-transferable, revocable license to download and use Cuore on your personal iPhone for your own personal, non-commercial purposes, subject to these terms. You may not:</p>
+  <ul>
+    <li>Copy, modify, distribute, or create derivative works of the App.</li>
+    <li>Reverse engineer, decompile, or attempt to extract the source code of the App.</li>
+    <li>Use the App for any commercial purpose without our prior written consent.</li>
+    <li>Use the App in any way that violates applicable laws or regulations.</li>
+  </ul>
+
+  <h2>6. Cuore Pro subscription</h2>
+  <p>Cuore Pro is an auto-renewable subscription available through Apple's App Store. By subscribing:</p>
+  <ul>
+    <li>You authorise Apple to charge your Apple ID account at the price shown at the time of purchase.</li>
+    <li>Your subscription automatically renews unless cancelled at least 24 hours before the end of the current billing period.</li>
+    <li>You can manage and cancel your subscription at any time in iOS Settings → [Your Name] → Subscriptions.</li>
+    <li>No refunds are provided for partial billing periods, except as required by applicable law or Apple's standard refund policy.</li>
+    <li>We reserve the right to change subscription pricing with reasonable notice. Price changes take effect at your next renewal.</li>
+  </ul>
+
+  <h2>7. Your data</h2>
+  <p>All measurement data is stored locally on your device. We do not collect, access, or store your health data on any server. Please refer to our <a href="privacy.html">Privacy Policy</a> for full details on how data is handled.</p>
+
+  <h2>8. Intellectual property</h2>
+  <p>All content within the App — including but not limited to the name "Cuore", the app icon, interface design, algorithms, and copy — is owned by or licensed to the developer and is protected by applicable intellectual property laws. Nothing in these terms transfers any ownership rights to you.</p>
+
+  <h2>9. Disclaimer of warranties</h2>
+  <p>The App is provided "as is" and "as available" without warranties of any kind, either express or implied. To the fullest extent permitted by law, we disclaim all warranties including implied warranties of merchantability, fitness for a particular purpose, and non-infringement. We do not warrant that the App will be error-free, uninterrupted, or free of harmful components.</p>
+
+  <h2>10. Limitation of liability</h2>
+  <p>To the maximum extent permitted by applicable law, the developer of Cuore shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of or inability to use the App, including damages related to health decisions made based on App measurements. Our total liability to you for any claims shall not exceed the amount you paid for the App in the twelve months preceding the claim.</p>
+
+  <h2>11. Indemnification</h2>
+  <p>You agree to indemnify and hold harmless the developer of Cuore from any claims, damages, losses, liabilities, costs, or expenses (including reasonable legal fees) arising from your use of the App, your violation of these terms, or your violation of any third-party rights.</p>
+
+  <h2>12. Governing law</h2>
+  <p>These terms are governed by and construed in accordance with applicable law. Any disputes shall be resolved in the courts of the jurisdiction where the developer is established, unless otherwise required by consumer protection law in your country of residence.</p>
+
+  <h2>13. Changes to these terms</h2>
+  <p>We may update these terms from time to time. Significant changes will be communicated through an app update or notification. Your continued use of the App after changes are posted constitutes your acceptance of the revised terms. The date at the top of this page reflects the most recent revision.</p>
+
+  <h2>14. Termination</h2>
+  <p>We reserve the right to terminate or suspend access to the App at any time, with or without cause or notice. Upon termination, the license granted to you under these terms immediately ceases.</p>
+
+  <h2>15. Contact</h2>
+  <p>If you have questions about these terms, please reach out via the support link on the App Store page for Cuore.</p>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <ul class="footer-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="privacy.html">Privacy Policy</a></li>
+    </ul>
+    <p class="footer-copy">© 2026 Cuore</p>
+  </div>
+</footer>
+
+</body>
+</html>

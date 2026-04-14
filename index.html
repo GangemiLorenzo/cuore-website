@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cuore — Your heart, in 30 seconds.</title>
+  <meta name="description" content="Measure heart rate, HRV, and stress in 30 seconds — using just your iPhone camera and flash. No wearable required." />
+  <meta property="og:title" content="Cuore — Your heart, in 30 seconds." />
+  <meta property="og:description" content="Measure heart rate, HRV, and stress with just your iPhone camera. No wearable required." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset ────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:             #060708;
+      --bg-card:        #0e0f10;
+      --bg-card-2:      #131415;
+      --text-primary:   #f5f5f7;
+      --text-secondary: #98989e;
+      --text-muted:     #56565a;
+      --accent:         #FF4040;
+      --accent-soft:    #FF6363;
+      --accent-rgb:     255, 64, 64;
+      --accent-soft-rgb:255, 99, 99;
+      --border:         rgba(255,255,255,0.07);
+      --border-strong:  rgba(255,255,255,0.12);
+      --radius-card:    20px;
+      --radius-pill:    100px;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { display: block; }
+
+    /* Noise grain */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.5;
+    }
+
+    /* ─── Layout helpers ────────────────────────────────────────────── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .section-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+      color: var(--accent-soft);
+      margin-bottom: 14px;
+    }
+
+    /* ─── Buttons ───────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 13px 26px;
+      border-radius: var(--radius-pill);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.1px;
+      cursor: pointer;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      white-space: nowrap;
+      border: none;
+      text-decoration: none;
+      font-family: var(--font);
+    }
+    .btn:hover { opacity: 0.82; transform: translateY(-1px); }
+    .btn:active { opacity: 1; transform: translateY(0); }
+
+    .btn-primary {
+      background: var(--text-primary);
+      color: #111;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.15) inset, 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.15) inset, 0 4px 20px rgba(var(--accent-rgb), 0.35);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      box-shadow: 0 0 0 1px rgb(27,28,30), 0 0 0 1px rgb(7,8,10) inset;
+    }
+
+    /* ─── Nav ───────────────────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      background: rgba(6,7,8,0.82);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 58px;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+    }
+
+    .nav-logo-heart {
+      width: 28px;
+      height: 28px;
+      background: radial-gradient(circle at 38% 35%, #e84040, #be2222 60%, #961818);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.4);
+    }
+
+    .nav-logo-heart svg { width: 15px; height: 15px; fill: #fff; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: color 0.18s ease;
+    }
+    .nav-links a:hover { color: var(--text-primary); }
+
+    .nav-cta { padding: 8px 18px; font-size: 13px; }
+
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 22px;
+      height: 1.5px;
+      background: var(--text-primary);
+      border-radius: 2px;
+      transition: transform 0.22s ease, opacity 0.22s ease;
+      transform-origin: center;
+    }
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    .nav-mobile {
+      display: none;
+      flex-direction: column;
+      background: rgba(8,9,10,0.97);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px 24px;
+      gap: 4px;
+    }
+    .nav-mobile.open { display: flex; }
+    .nav-mobile a {
+      padding: 12px 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-mobile .btn { margin-top: 16px; width: 100%; justify-content: center; font-size: 15px; }
+
+    /* ─── Hero ──────────────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      text-align: center;
+      padding: 96px 24px 0;
+      overflow: hidden;
+    }
+
+    /* radial glow */
+    .hero-glow {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 500px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(var(--accent-rgb), 0.09) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(var(--accent-rgb), 0.09);
+      border: 1px solid rgba(var(--accent-rgb), 0.2);
+      border-radius: 100px;
+      padding: 5px 15px 5px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      color: var(--accent-soft);
+      margin-bottom: 28px;
+      position: relative;
+    }
+
+    .hero-eyebrow-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 6px var(--accent);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.45; transform: scale(0.65); }
+    }
+
+    .hero-h1 {
+      font-size: clamp(46px, 7.5vw, 80px);
+      font-weight: 800;
+      line-height: 1.03;
+      letter-spacing: -2.5px;
+      color: var(--text-primary);
+      margin-bottom: 22px;
+      position: relative;
+    }
+
+    .hero-h1 em {
+      font-style: normal;
+      color: var(--accent-soft);
+    }
+
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 19px);
+      color: var(--text-secondary);
+      max-width: 480px;
+      margin: 0 auto 40px;
+      line-height: 1.65;
+      font-weight: 400;
+      position: relative;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 72px;
+      position: relative;
+    }
+
+    .hero-actions .btn { padding: 15px 30px; font-size: 15px; }
+
+    .hero-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 400;
+      position: relative;
+    }
+
+    .hero-badge svg { width: 14px; height: 14px; opacity: 0.5; }
+
+    /* Hero screenshots strip */
+    .hero-screens {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 0;
+      padding: 0 0 0;
+      height: 560px;
+    }
+
+    .hero-screen {
+      position: absolute;
+      bottom: 0;
+      border-radius: 36px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.08),
+        0 40px 100px rgba(0,0,0,0.9),
+        0 0 60px rgba(var(--accent-rgb), 0.06);
+    }
+
+    .hero-screen-main {
+      width: 240px;
+      z-index: 3;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .hero-screen-main img { width: 100%; }
+
+    .hero-screen-left {
+      width: 200px;
+      z-index: 2;
+      left: 50%;
+      transform: translateX(calc(-50% - 200px)) rotate(-6deg);
+      transform-origin: bottom center;
+      opacity: 0.7;
+      bottom: -10px;
+    }
+    .hero-screen-left img { width: 100%; }
+
+    .hero-screen-right {
+      width: 200px;
+      z-index: 2;
+      left: 50%;
+      transform: translateX(calc(-50% + 100px)) rotate(6deg);
+      transform-origin: bottom center;
+      opacity: 0.7;
+      bottom: -10px;
+    }
+    .hero-screen-right img { width: 100%; }
+
+    /* Gradient fade below screenshots */
+    .hero-screens::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 160px;
+      background: linear-gradient(to top, var(--bg) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    /* ─── Stats bar ─────────────────────────────────────────────────── */
+    .stats-bar {
+      padding: 60px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 0 24px;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+
+    .stat-number {
+      font-size: clamp(32px, 4vw, 48px);
+      font-weight: 800;
+      letter-spacing: -2px;
+      color: var(--text-primary);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .stat-number span { color: var(--accent-soft); }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    /* ─── How it works ──────────────────────────────────────────────── */
+    .how {
+      padding: 100px 0;
+    }
+
+    .how-header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+
+    .how-h2 {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      letter-spacing: -1.2px;
+      line-height: 1.1;
+      margin-bottom: 14px;
+    }
+
+    .how-sub {
+      font-size: 16px;
+      color: var(--text-secondary);
+      font-weight: 400;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .how-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .how-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 36px 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .how-step::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+    }
+
+    .how-step-num {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .how-step-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(var(--accent-rgb), 0.1);
+      border: 1px solid rgba(var(--accent-rgb), 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .how-step-icon svg { width: 20px; height: 20px; }
+
+    .how-step-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      margin-bottom: 10px;
+    }
+
+    .how-step-body {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 400;
+      line-height: 1.65;
+    }
+
+    /* ─── Feature showcase ──────────────────────────────────────────── */
+    .features {
+      padding: 20px 0 100px;
+    }
+
+    .feature-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      padding: 60px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .feature-row.reverse { direction: rtl; }
+    .feature-row.reverse > * { direction: ltr; }
+
+    .feature-tag { margin-bottom: 16px; }
+
+    .feature-h3 {
+      font-size: clamp(26px, 3.5vw, 40px);
+      font-weight: 700;
+      letter-spacing: -1.2px;
+      line-height: 1.08;
+      margin-bottom: 18px;
+    }
+
+    .feature-body {
+      font-size: 16px;
+      color: var(--text-secondary);
+      font-weight: 400;
+      line-height: 1.7;
+      margin-bottom: 28px;
+      max-width: 420px;
+    }
+
+    .feature-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .feature-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .feature-pill-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      flex-shrink: 0;
+    }
+
+    .feature-screen-wrap {
+      display: flex;
+      justify-content: center;
+    }
+
+    .feature-screen {
+      width: 260px;
+      border-radius: 36px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.08),
+        0 40px 80px rgba(0,0,0,0.8),
+        0 0 40px rgba(var(--accent-rgb), 0.05);
+    }
+    .feature-screen img { width: 100%; }
+
+    /* ─── Vitals cards ──────────────────────────────────────────────── */
+    .vitals {
+      padding: 40px 0 100px;
+    }
+
+    .vitals-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .vitals-h2 {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      letter-spacing: -1.2px;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .vitals-sub {
+      font-size: 16px;
+      color: var(--text-secondary);
+      font-weight: 400;
+      max-width: 380px;
+      margin: 0 auto;
+    }
+
+    .vitals-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .vital-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vital-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+    }
+
+    .vital-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+
+    .vital-icon-bpm  { background: rgba(255, 64, 64, 0.12); border: 1px solid rgba(255,64,64,0.15); }
+    .vital-icon-hrv  { background: rgba(255,160, 50, 0.12); border: 1px solid rgba(255,160,50,0.15); }
+    .vital-icon-stress { background: rgba(80,160,255, 0.10); border: 1px solid rgba(80,160,255,0.14); }
+
+    .vital-name {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 1.2px;
+    }
+
+    .vital-h4 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.6px;
+      margin-bottom: 10px;
+    }
+
+    .vital-body {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 400;
+      line-height: 1.65;
+    }
+
+    /* ─── Privacy / Trust ───────────────────────────────────────────── */
+    .trust {
+      padding: 40px 0 100px;
+    }
+
+    .trust-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 64px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .trust-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    }
+
+    .trust-glow {
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(var(--accent-rgb), 0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .trust-h2 {
+      font-size: clamp(26px, 3.5vw, 38px);
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    .trust-body {
+      font-size: 15px;
+      color: var(--text-secondary);
+      font-weight: 400;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    .trust-items {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .trust-item-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: rgba(var(--accent-rgb), 0.08);
+      border: 1px solid rgba(var(--accent-rgb), 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .trust-item-icon svg { width: 15px; height: 15px; }
+
+    .trust-item-text strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .trust-item-text span {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .trust-badges {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .trust-badge-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .trust-badge {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+    }
+    .trust-badge-num {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: var(--text-primary);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .trust-badge-num span { color: var(--accent-soft); }
+    .trust-badge-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .trust-badge-full {
+      background: var(--bg-card-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .trust-badge-full-icon {
+      font-size: 28px;
+      line-height: 1;
+    }
+    .trust-badge-full-text strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .trust-badge-full-text span {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    /* ─── Pricing ───────────────────────────────────────────────────── */
+    .pricing {
+      padding: 40px 0 100px;
+    }
+
+    .pricing-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .pricing-h2 {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      letter-spacing: -1.2px;
+      margin-bottom: 12px;
+    }
+
+    .pricing-sub {
+      font-size: 16px;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .pricing-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 36px;
+      position: relative;
+    }
+
+    .pricing-card.featured {
+      background: linear-gradient(160deg, rgba(var(--accent-rgb), 0.08) 0%, var(--bg-card) 60%);
+      border-color: rgba(var(--accent-rgb), 0.25);
+    }
+
+    .pricing-card.featured::before {
+      content: 'Most Popular';
+      position: absolute;
+      top: -1px; right: 20px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      padding: 4px 12px;
+      border-radius: 0 0 10px 10px;
+    }
+
+    .pricing-tier {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .pricing-price {
+      font-size: 40px;
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .pricing-period {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-bottom: 24px;
+    }
+
+    .pricing-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 24px 0;
+    }
+
+    .pricing-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .pricing-feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .pricing-feature-check {
+      width: 18px;
+      height: 18px;
+      border-radius: 6px;
+      background: rgba(var(--accent-rgb), 0.1);
+      border: 1px solid rgba(var(--accent-rgb), 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .pricing-feature-check svg { width: 10px; height: 10px; }
+    .pricing-feature-cross {
+      width: 18px;
+      height: 18px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      opacity: 0.4;
+    }
+
+    .pricing-cta { width: 100%; justify-content: center; font-size: 14px; padding: 13px; }
+
+    /* ─── FAQ ───────────────────────────────────────────────────────── */
+    .faq {
+      padding: 40px 0 100px;
+    }
+
+    .faq-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .faq-h2 {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      letter-spacing: -1.2px;
+    }
+
+    .faq-list {
+      max-width: 680px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .faq-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .faq-q {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 15px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      text-align: left;
+      gap: 16px;
+    }
+
+    .faq-chevron {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.2s ease;
+    }
+    .faq-chevron svg { width: 10px; height: 10px; opacity: 0.6; }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+
+    .faq-a {
+      display: none;
+      padding: 0 24px 20px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 400;
+      line-height: 1.7;
+    }
+    .faq-item.open .faq-a { display: block; }
+
+    /* ─── Final CTA ─────────────────────────────────────────────────── */
+    .final-cta {
+      padding: 40px 0 100px;
+    }
+
+    .final-cta-card {
+      text-align: center;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 32px;
+      padding: 80px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .final-cta-glow {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(ellipse at center, rgba(var(--accent-rgb), 0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .final-cta-h2 {
+      font-size: clamp(32px, 5vw, 56px);
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1.05;
+      margin-bottom: 18px;
+      position: relative;
+    }
+
+    .final-cta-sub {
+      font-size: 17px;
+      color: var(--text-secondary);
+      font-weight: 400;
+      max-width: 420px;
+      margin: 0 auto 40px;
+      line-height: 1.65;
+      position: relative;
+    }
+
+    .final-cta-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    .final-cta-actions .btn { padding: 16px 32px; font-size: 15px; }
+
+    .appstore-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--text-primary);
+      color: #111;
+      border-radius: 14px;
+      padding: 10px 22px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      cursor: pointer;
+      border: none;
+      text-decoration: none;
+    }
+    .appstore-badge:hover { opacity: 0.85; transform: translateY(-2px); }
+    .appstore-badge svg { width: 20px; height: 20px; }
+
+    .appstore-badge-sub {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+    }
+    .appstore-badge-eyebrow {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+      color: #555;
+      line-height: 1;
+      margin-bottom: 2px;
+    }
+    .appstore-badge-name {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      line-height: 1;
+    }
+
+    /* ─── Footer ────────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .footer-dot {
+      width: 7px; height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 400;
+      transition: color 0.15s ease;
+    }
+    .footer-links a:hover { color: var(--text-secondary); }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    /* ─── Responsive ────────────────────────────────────────────────── */
+    @media (max-width: 860px) {
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .nav-hamburger { display: flex; }
+
+      .hero { padding: 72px 20px 0; }
+      .hero-h1 { letter-spacing: -1.5px; }
+      .hero-screens { height: 420px; }
+      .hero-screen-main { width: 190px; }
+      .hero-screen-left, .hero-screen-right { width: 155px; }
+
+      .stats-grid { grid-template-columns: repeat(3, 1fr); gap: 0; }
+      .stat-item { padding: 0 16px; }
+
+      .how-steps { grid-template-columns: 1fr; gap: 16px; }
+
+      .feature-row { grid-template-columns: 1fr; gap: 40px; }
+      .feature-row.reverse { direction: ltr; }
+      .feature-body { max-width: 100%; }
+      .feature-screen { width: 220px; }
+
+      .vitals-grid { grid-template-columns: 1fr; gap: 16px; }
+
+      .trust-card { grid-template-columns: 1fr; padding: 40px 28px; gap: 36px; }
+
+      .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
+
+      .final-cta-card { padding: 56px 28px; }
+      .final-cta-h2 { letter-spacing: -1.5px; }
+    }
+
+    @media (max-width: 560px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--border); padding: 20px 0; }
+      .stat-item:last-child { border-bottom: none; }
+
+      .trust-badge-row { grid-template-columns: 1fr; }
+
+      .footer-inner { flex-direction: column; text-align: center; }
+      .footer-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── Nav ─────────────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="#">
+      <div class="nav-logo-heart" aria-hidden="true">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      </div>
+      Cuore
+    </a>
+    <ul class="nav-links">
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <a href="#download" class="btn btn-primary nav-cta">Download Free</a>
+    <button class="nav-hamburger" aria-label="Menu" id="hamburger">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav-mobile" id="mobileMenu">
+    <a href="#how" onclick="closeMobile()">How it works</a>
+    <a href="#features" onclick="closeMobile()">Features</a>
+    <a href="#pricing" onclick="closeMobile()">Pricing</a>
+    <a href="#faq" onclick="closeMobile()">FAQ</a>
+    <a href="#download" class="btn btn-primary" onclick="closeMobile()">Download Free</a>
+  </div>
+</nav>
+
+<!-- ─── Hero ─────────────────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+
+  <div class="hero-eyebrow">
+    <span class="hero-eyebrow-dot" aria-hidden="true"></span>
+    Now available on the App Store
+  </div>
+
+  <h1 class="hero-h1">Your heart,<br><em>in 30 seconds.</em></h1>
+
+  <p class="hero-sub">
+    Measure heart rate, HRV, and stress levels — using just your iPhone camera and flash. No wearable required.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#download" class="btn btn-accent">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+      Download for iPhone
+    </a>
+    <a href="#how" class="btn btn-ghost">See how it works</a>
+  </div>
+
+  <div class="hero-screens" aria-label="App screenshots">
+    <div class="hero-screen hero-screen-left">
+      <img src="assets/04-streak-1320x2868.png" alt="History and streak tracking" loading="lazy" />
+    </div>
+    <div class="hero-screen hero-screen-main">
+      <img src="assets/01-hero-1320x2868.png" alt="Cuore app home screen" />
+    </div>
+    <div class="hero-screen hero-screen-right">
+      <img src="assets/03-results-1320x2868.png" alt="Measurement results screen" loading="lazy" />
+    </div>
+  </div>
+</section>
+
+<!-- ─── Stats bar ─────────────────────────────────────────────────────── -->
+<section class="stats-bar">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-number"><span>30s</span></div>
+        <div class="stat-label">per measurement</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number"><span>3</span></div>
+        <div class="stat-label">vitals in one reading</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number"><span>0</span></div>
+        <div class="stat-label">extra devices needed</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── How it works ─────────────────────────────────────────────────── -->
+<section class="how" id="how">
+  <div class="container">
+    <div class="how-header">
+      <div class="section-tag">How it works</div>
+      <h2 class="how-h2">Three steps.<br>Thirty seconds.</h2>
+      <p class="how-sub">Your iPhone's camera sees what you can't feel — real-time changes in blood flow beneath your fingertip.</p>
+    </div>
+
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-step-num">Step 01</div>
+        <div class="how-step-icon">
+          <!-- Camera icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-soft)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </div>
+        <h3 class="how-step-title">Cover the camera</h3>
+        <p class="how-step-body">Place your fingertip gently over the rear camera lens. The flash illuminates your skin from beneath, revealing subtle changes in blood volume.</p>
+      </div>
+
+      <div class="how-step">
+        <div class="how-step-num">Step 02</div>
+        <div class="how-step-icon">
+          <!-- Wave icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-soft)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <h3 class="how-step-title">Hold still for 30s</h3>
+        <p class="how-step-body">Keep your finger steady while Cuore reads your pulse. A live waveform shows every heartbeat as it's captured in real time.</p>
+      </div>
+
+      <div class="how-step">
+        <div class="how-step-num">Step 03</div>
+        <div class="how-step-icon">
+          <!-- Check icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-soft)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <h3 class="how-step-title">See your vitals</h3>
+        <p class="how-step-body">Get your heart rate, HRV, and stress level instantly. Results sync to Apple Health and are saved to your history automatically.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Features ──────────────────────────────────────────────────────── -->
+<section class="features" id="features">
+  <div class="container">
+
+    <!-- Feature 1: Measurement -->
+    <div class="feature-row">
+      <div class="feature-text">
+        <div class="section-tag feature-tag">Real-time sensing</div>
+        <h3 class="feature-h3">See every<br>heartbeat live.</h3>
+        <p class="feature-body">Cuore uses photoplethysmography (PPG) — the same technology inside high-end fitness trackers — powered entirely by the camera and flash already in your pocket.</p>
+        <div class="feature-pills">
+          <span class="feature-pill"><span class="feature-pill-dot"></span>Live waveform display</span>
+          <span class="feature-pill"><span class="feature-pill-dot"></span>Signal quality indicator</span>
+          <span class="feature-pill"><span class="feature-pill-dot"></span>30 fps sampling rate</span>
+        </div>
+      </div>
+      <div class="feature-screen-wrap">
+        <div class="feature-screen">
+          <img src="assets/02-measure-1320x2868.png" alt="Live heart rate measurement with waveform" loading="lazy" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 2: Results -->
+    <div class="feature-row reverse">
+      <div class="feature-text">
+        <div class="section-tag feature-tag">Instant results</div>
+        <h3 class="feature-h3">More than just<br>a number.</h3>
+        <p class="feature-body">Beyond BPM, Cuore measures heart rate variability (HRV) — a powerful indicator of recovery and nervous system health — and a stress score derived from your HRV pattern.</p>
+        <div class="feature-pills">
+          <span class="feature-pill"><span class="feature-pill-dot"></span>Heart rate (BPM)</span>
+          <span class="feature-pill"><span class="feature-pill-dot"></span>HRV (RMSSD)</span>
+          <span class="feature-pill"><span class="feature-pill-dot"></span>Stress classification</span>
+          <span class="feature-pill"><span class="feature-pill-dot"></span>Confidence score</span>
+        </div>
+      </div>
+      <div class="feature-screen-wrap">
+        <div class="feature-screen">
+          <img src="assets/03-results-1320x2868.png" alt="Measurement results showing heart rate, HRV, and stress" loading="lazy" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 3: History -->
+    <div class="feature-row">
+      <div class="feature-text">
+        <div class="section-tag feature-tag">Build a habit</div>
+        <h3 class="feature-h3">Track trends<br>over time.</h3>
+        <p class="feature-body">A daily streak keeps you consistent. Your history view shows BPM trends, HRV changes, and stress patterns across all your past readings — so you can spot what actually affects your health.</p>
+        <div class="feature-pills">
+          <span class="feature-pill"><span class="feature-pill-dot"></span>Daily streak tracking</span>
+          <span class="feature-pill"><span class="feature-pill-dot"></span>BPM trend graph</span>
+          <span class="feature-pill"><span class="feature-pill-dot"></span>Filter by date &amp; metric</span>
+        </div>
+      </div>
+      <div class="feature-screen-wrap">
+        <div class="feature-screen">
+          <img src="assets/04-streak-1320x2868.png" alt="History and streak tracking" loading="lazy" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Feature 4: Apple Health -->
+    <div class="feature-row reverse">
+      <div class="feature-text">
+        <div class="section-tag feature-tag">Apple Health</div>
+        <h3 class="feature-h3">Every reading,<br>auto-saved.</h3>
+        <p class="feature-body">Heart rate and HRV sync directly to Apple Health after every measurement. Your data lives in your Health app alongside all your other vitals — always in your control.</p>
+        <div class="feature-pills">
+          <span class="feature-pill"><span class="feature-pill-dot"></span>Writes heart rate (BPM)</span>
+          <span class="feature-pill"><span class="feature-pill-dot"></span>Writes HRV (RMSSD)</span>
+          <span class="feature-pill"><span class="feature-pill-dot"></span>Never reads your data</span>
+        </div>
+      </div>
+      <div class="feature-screen-wrap">
+        <div class="feature-screen">
+          <img src="assets/06-health-1320x2868.png" alt="Apple Health integration" loading="lazy" />
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── Vitals ─────────────────────────────────────────────────────────── -->
+<section class="vitals">
+  <div class="container">
+    <div class="vitals-header">
+      <div class="section-tag">Three vitals</div>
+      <h2 class="vitals-h2">Everything your heart<br>is telling you.</h2>
+      <p class="vitals-sub">Three metrics, one 30-second session. All from your rear camera.</p>
+    </div>
+
+    <div class="vitals-grid">
+      <div class="vital-card">
+        <div class="vital-icon vital-icon-bpm">❤️</div>
+        <div class="vital-name">Heart Rate</div>
+        <h4 class="vital-h4">Beats Per Minute</h4>
+        <p class="vital-body">Your resting heart rate — updated in real time as the measurement runs. Typical resting range is 60–100 BPM for most adults.</p>
+      </div>
+
+      <div class="vital-card">
+        <div class="vital-icon vital-icon-hrv">⚡️</div>
+        <div class="vital-name">HRV — RMSSD</div>
+        <h4 class="vital-h4">Heart Rate Variability</h4>
+        <p class="vital-body">The variation in time between heartbeats. Higher HRV generally indicates better cardiovascular fitness and lower physiological stress.</p>
+      </div>
+
+      <div class="vital-card">
+        <div class="vital-icon vital-icon-stress">🧠</div>
+        <div class="vital-name">Stress Level</div>
+        <h4 class="vital-h4">From Very Relaxed to Very Stressed</h4>
+        <p class="vital-body">A stress classification derived from your HRV pattern — not a vague score, but a human-readable description of your autonomic state right now.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Privacy / Trust ───────────────────────────────────────────────── -->
+<section class="trust">
+  <div class="container">
+    <div class="trust-card">
+      <div class="trust-glow" aria-hidden="true"></div>
+      <div class="trust-text">
+        <div class="section-tag">Privacy first</div>
+        <h2 class="trust-h2">Your health data<br>stays yours.</h2>
+        <p class="trust-body">Cuore is built with a simple rule: your biometric data never leaves your device. No servers. No accounts. No selling your health data to third parties. Ever.</p>
+        <div class="trust-items">
+          <div class="trust-item">
+            <div class="trust-item-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-soft)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            </div>
+            <div class="trust-item-text">
+              <strong>All data stored on-device</strong>
+              <span>Measurements stay in SwiftData on your iPhone, never uploaded to any server.</span>
+            </div>
+          </div>
+          <div class="trust-item">
+            <div class="trust-item-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-soft)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="trust-item-text">
+              <strong>No account required</strong>
+              <span>Download and start measuring. No email, no sign-up, no tracking.</span>
+            </div>
+          </div>
+          <div class="trust-item">
+            <div class="trust-item-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-soft)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="trust-item-text">
+              <strong>Apple Health write-only</strong>
+              <span>Cuore only writes to Apple Health — it never reads any existing health data.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="trust-badges">
+        <div class="trust-badge-row">
+          <div class="trust-badge">
+            <div class="trust-badge-num"><span>0</span></div>
+            <div class="trust-badge-label">Servers touched</div>
+          </div>
+          <div class="trust-badge">
+            <div class="trust-badge-num"><span>0</span></div>
+            <div class="trust-badge-label">Third-party SDKs</div>
+          </div>
+        </div>
+        <div class="trust-badge-full">
+          <div class="trust-badge-full-icon">🍎</div>
+          <div class="trust-badge-full-text">
+            <strong>Built for iOS 17+</strong>
+            <span>Native Swift, no external dependencies</span>
+          </div>
+        </div>
+        <div class="trust-badge-full">
+          <div class="trust-badge-full-icon">🔒</div>
+          <div class="trust-badge-full-text">
+            <strong>No account required</strong>
+            <span>No email, no sign-up, no tracking</span>
+          </div>
+        </div>
+        <div class="trust-badge-full">
+          <div class="trust-badge-full-icon">❤️</div>
+          <div class="trust-badge-full-text">
+            <strong>Apple Health integration</strong>
+            <span>Write-only — your existing data stays private</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Pricing ───────────────────────────────────────────────────────── -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="pricing-header">
+      <div class="section-tag">Pricing</div>
+      <h2 class="pricing-h2">Free to start,<br>Pro when you're ready.</h2>
+      <p class="pricing-sub">Everything you need to check in with your heart, every day.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Free tier -->
+      <div class="pricing-card">
+        <div class="pricing-tier">Free</div>
+        <div class="pricing-price">$0</div>
+        <div class="pricing-period">forever</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li class="pricing-feature">
+            <span class="pricing-feature-check"><svg viewBox="0 0 12 12" fill="none" stroke="var(--accent-soft)" stroke-width="2" stroke-linecap="round"><polyline points="2 6 5 9 10 3"/></svg></span>
+            3 measurements per day
+          </li>
+          <li class="pricing-feature">
+            <span class="pricing-feature-check"><svg viewBox="0 0 12 12" fill="none" stroke="var(--accent-soft)" stroke-width="2" stroke-linecap="round"><polyline points="2 6 5 9 10 3"/></svg></span>
+            Heart rate, HRV &amp; stress
+          </li>
+          <li class="pricing-feature">
+            <span class="pricing-feature-check"><svg viewBox="0 0 12 12" fill="none" stroke="var(--accent-soft)" stroke-width="2" stroke-linecap="round"><polyline points="2 6 5 9 10 3"/></svg></span>
+            Apple Health sync
+          </li>
+          <li class="pricing-feature">
+            <span class="pricing-feature-check"><svg viewBox="0 0 12 12" fill="none" stroke="var(--accent-soft)" stroke-width="2" stroke-linecap="round"><polyline points="2 6 5 9 10 3"/></svg></span>
+            Measurement history
+          </li>
+          <li class="pricing-feature" style="opacity:0.4">
+            <span class="pricing-feature-cross"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="3" x2="9" y2="9"/><line x1="9" y1="3" x2="3" y2="9"/></svg></span>
+            Unlimited measurements
+          </li>
+          <li class="pricing-feature" style="opacity:0.4">
+            <span class="pricing-feature-cross"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="3" y1="3" x2="9" y2="9"/><line x1="9" y1="3" x2="3" y2="9"/></svg></span>
+            No ads
+          </li>
+        </ul>
+        <a href="#download" class="btn btn-ghost pricing-cta">Download Free</a>
+      </div>
+
+      <!-- Pro tier -->
+      <div class="pricing-card featured">
+        <div class="pricing-tier">Pro</div>
+        <div class="pricing-price">$2.99</div>
+        <div class="pricing-period">per month</div>
+        <div class="pricing-divider"></div>
+        <ul class="pricing-features">
+          <li class="pricing-feature">
+            <span class="pricing-feature-check"><svg viewBox="0 0 12 12" fill="none" stroke="var(--accent-soft)" stroke-width="2" stroke-linecap="round"><polyline points="2 6 5 9 10 3"/></svg></span>
+            <strong>Unlimited</strong> measurements
+          </li>
+          <li class="pricing-feature">
+            <span class="pricing-feature-check"><svg viewBox="0 0 12 12" fill="none" stroke="var(--accent-soft)" stroke-width="2" stroke-linecap="round"><polyline points="2 6 5 9 10 3"/></svg></span>
+            Heart rate, HRV &amp; stress
+          </li>
+          <li class="pricing-feature">
+            <span class="pricing-feature-check"><svg viewBox="0 0 12 12" fill="none" stroke="var(--accent-soft)" stroke-width="2" stroke-linecap="round"><polyline points="2 6 5 9 10 3"/></svg></span>
+            Apple Health sync
+          </li>
+          <li class="pricing-feature">
+            <span class="pricing-feature-check"><svg viewBox="0 0 12 12" fill="none" stroke="var(--accent-soft)" stroke-width="2" stroke-linecap="round"><polyline points="2 6 5 9 10 3"/></svg></span>
+            Full history &amp; trend graphs
+          </li>
+          <li class="pricing-feature">
+            <span class="pricing-feature-check"><svg viewBox="0 0 12 12" fill="none" stroke="var(--accent-soft)" stroke-width="2" stroke-linecap="round"><polyline points="2 6 5 9 10 3"/></svg></span>
+            <strong>No ads</strong>
+          </li>
+          <li class="pricing-feature">
+            <span class="pricing-feature-check"><svg viewBox="0 0 12 12" fill="none" stroke="var(--accent-soft)" stroke-width="2" stroke-linecap="round"><polyline points="2 6 5 9 10 3"/></svg></span>
+            Priority feature access
+          </li>
+        </ul>
+        <a href="#download" class="btn btn-accent pricing-cta">Get Pro</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FAQ ───────────────────────────────────────────────────────────── -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="faq-header">
+      <div class="section-tag">FAQ</div>
+      <h2 class="faq-h2">Common questions.</h2>
+    </div>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How accurate is camera-based heart rate?
+          <span class="faq-chevron"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="2 3.5 5 6.5 8 3.5"/></svg></span>
+        </button>
+        <div class="faq-a">Cuore uses photoplethysmography (PPG), the same sensing technique used in dedicated fitness trackers and pulse oximeters. Under normal conditions — still finger, adequate contact with the lens — measurements are clinically comparable to dedicated pulse sensors. Results may vary with motion, poor circulation, or cold fingers. Cuore is not a medical device.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Does it work on any iPhone?
+          <span class="faq-chevron"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="2 3.5 5 6.5 8 3.5"/></svg></span>
+        </button>
+        <div class="faq-a">Cuore requires iOS 17.0 or later and a rear camera with a flash. It works on all iPhones that support iOS 17 — iPhone XS and newer. It is optimised for iPhone and is not available on iPad.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What is HRV and why does it matter?
+          <span class="faq-chevron"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="2 3.5 5 6.5 8 3.5"/></svg></span>
+        </button>
+        <div class="faq-a">Heart Rate Variability (HRV) measures the variation in time between consecutive heartbeats. A higher RMSSD — what Cuore reports — generally indicates a well-functioning autonomic nervous system and better ability to adapt to stress. Athletes and health researchers use HRV to track recovery and overtraining. It drops when you're stressed, sleep-deprived, or unwell, often before you consciously notice.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Does my data get sent to any server?
+          <span class="faq-chevron"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="2 3.5 5 6.5 8 3.5"/></svg></span>
+        </button>
+        <div class="faq-a">No. All measurements are stored locally on your iPhone using SwiftData. Cuore has no backend server, no analytics SDKs, and no cloud sync. Your health data never leaves your device unless you explicitly share it via Apple Health.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          How does the stress level work?
+          <span class="faq-chevron"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="2 3.5 5 6.5 8 3.5"/></svg></span>
+        </button>
+        <div class="faq-a">The stress classification is derived from your HRV (RMSSD) reading and calibrated against published population reference ranges. Lower HRV correlates with higher sympathetic nervous system activity — what we experience as stress. The result is shown as a descriptive label (Very Relaxed → Very Stressed) alongside a numeric score.</div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Can I cancel Pro at any time?
+          <span class="faq-chevron"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="2 3.5 5 6.5 8 3.5"/></svg></span>
+        </button>
+        <div class="faq-a">Yes. Cuore Pro is a standard App Store subscription managed entirely by Apple. You can cancel at any time through the Settings app or your Apple ID subscription page. Access continues until the end of the current billing period.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Final CTA ─────────────────────────────────────────────────────── -->
+<section class="final-cta" id="download">
+  <div class="container">
+    <div class="final-cta-card">
+      <div class="final-cta-glow" aria-hidden="true"></div>
+      <h2 class="final-cta-h2">Start knowing<br>your heart.</h2>
+      <p class="final-cta-sub">Free to download. No wearable. No subscription required to start. Just your iPhone.</p>
+      <div class="final-cta-actions">
+        <a href="https://apps.apple.com/app/cuore" class="appstore-badge" aria-label="Download on the App Store">
+          <svg viewBox="0 0 24 24" fill="#111"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          <div class="appstore-badge-sub">
+            <span class="appstore-badge-eyebrow">Download on the</span>
+            <span class="appstore-badge-name">App Store</span>
+          </div>
+        </a>
+      </div>
+      <p style="margin-top:20px;font-size:12px;color:var(--text-muted);position:relative;">iOS 17+ · iPhone only · Free to start</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Footer ────────────────────────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <span class="footer-dot" aria-hidden="true"></span>
+        Cuore
+      </div>
+      <ul class="footer-links">
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="privacy.html">Privacy Policy</a></li>
+        <li><a href="terms.html">Terms &amp; Conditions</a></li>
+      </ul>
+      <p class="footer-copy">© 2026 Cuore. Not a medical device.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Mobile nav
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = mobileMenu.classList.toggle('open');
+    hamburger.classList.toggle('open', isOpen);
+    hamburger.setAttribute('aria-expanded', isOpen);
+  });
+
+  function closeMobile() {
+    mobileMenu.classList.remove('open');
+    hamburger.classList.remove('open');
+  }
+
+  // FAQ accordion
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.toggle('open');
+    btn.setAttribute('aria-expanded', isOpen);
+  }
+
+  // Smooth scroll offset for sticky nav
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', e => {
+      const id = anchor.getAttribute('href').slice(1);
+      if (!id) return;
+      const target = document.getElementById(id);
+      if (!target) return;
+      e.preventDefault();
+      const offset = 70;
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+    });
+  });
+</script>
+
+</body>
+</html>
