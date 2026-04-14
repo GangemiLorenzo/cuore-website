@@ -950,6 +950,7 @@
     }
 
     .pricing-cta { width: 100%; justify-content: center; font-size: 14px; padding: 13px; }
+    .pricing-card-full { grid-column: span 2; }
 
     /* ─── FAQ ───────────────────────────────────────────────────────── */
     .faq {
@@ -1194,7 +1195,9 @@
       .trust-card { grid-template-columns: 1fr; padding: 40px 28px; gap: 36px; }
 
       .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
-      .pricing-grid .pricing-card[style*="span 2"] { grid-column: span 1; }
+      .pricing-card-full { grid-column: span 1 !important; }
+      .pricing-card-full > div { flex-direction: column; align-items: flex-start !important; }
+      .pricing-card-full .btn { width: 100%; justify-content: center; }
 
       .final-cta-card { padding: 56px 28px; }
       .final-cta-h2 { letter-spacing: -1.5px; }
@@ -1617,7 +1620,7 @@
       </div>
 
       <!-- Pro Monthly tier -->
-      <div class="pricing-card" style="grid-column: span 2;">
+      <div class="pricing-card pricing-card-full" style="grid-column: span 2;">
         <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
           <div>
             <div class="pricing-tier">Pro — Monthly</div>
