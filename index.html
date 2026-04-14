@@ -1191,6 +1191,7 @@
       .trust-card { grid-template-columns: 1fr; padding: 40px 28px; gap: 36px; }
 
       .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
+      .pricing-grid .pricing-card[style*="span 2"] { grid-column: span 1; }
 
       .final-cta-card { padding: 56px 28px; }
       .final-cta-h2 { letter-spacing: -1.5px; }
@@ -1545,7 +1546,7 @@
       <!-- Free tier -->
       <div class="pricing-card">
         <div class="pricing-tier">Free</div>
-        <div class="pricing-price">$0</div>
+        <div class="pricing-price">€0</div>
         <div class="pricing-period">forever</div>
         <div class="pricing-divider"></div>
         <ul class="pricing-features">
@@ -1577,11 +1578,11 @@
         <a href="#download" class="btn btn-ghost pricing-cta">Download Free</a>
       </div>
 
-      <!-- Pro tier -->
+      <!-- Pro Yearly tier -->
       <div class="pricing-card featured">
-        <div class="pricing-tier">Pro</div>
-        <div class="pricing-price">$2.99</div>
-        <div class="pricing-period">per month</div>
+        <div class="pricing-tier">Pro — Best Value</div>
+        <div class="pricing-price">€24.99</div>
+        <div class="pricing-period">per year · <strong style="color:var(--accent-soft)">7-day free trial</strong></div>
         <div class="pricing-divider"></div>
         <ul class="pricing-features">
           <li class="pricing-feature">
@@ -1609,7 +1610,21 @@
             Priority feature access
           </li>
         </ul>
-        <a href="#download" class="btn btn-accent pricing-cta">Get Pro</a>
+        <a href="#download" class="btn btn-accent pricing-cta">Start Free Trial</a>
+      </div>
+
+      <!-- Pro Monthly tier -->
+      <div class="pricing-card" style="grid-column: span 2;">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+          <div>
+            <div class="pricing-tier">Pro — Monthly</div>
+            <div style="display:flex; align-items:baseline; gap:6px;">
+              <div class="pricing-price">€2.99</div>
+              <div class="pricing-period">per month · no trial</div>
+            </div>
+          </div>
+          <a href="#download" class="btn btn-ghost" style="padding:11px 24px; font-size:14px; white-space:nowrap;">Subscribe Monthly</a>
+        </div>
       </div>
     </div>
   </div>
